@@ -92,6 +92,7 @@ public class DbfReader implements Closeable {
             case 'F': return readFloatValue(field, buf);
             case 'L': return readLogicalValue(field, buf);
             case 'N': return readNumericValue(field, buf);
+            case 'M': return readMemoLink(field, buf);
             default:  return null;
         }
     }
@@ -129,6 +130,21 @@ public class DbfReader implements Closeable {
             return processable ? Double.valueOf(new String(numericBuf)) : null;
         } catch (NumberFormatException e) {
             throw new DbfException("Failed to parse Number from " + field.getName(), e);
+        }
+    }
+
+    protected Number readMemoLink(DbfField field, byte[] buf) throws IOException {
+        switch (field.getFieldLength()) {
+            case 4:
+                int ch1 = buf[0];
+                int ch2 = buf[1];
+                int ch3 = buf[2];
+                int ch4 = buf[3];
+                return ((ch4 << 24) + (ch3 << 16) + (ch2 << 8) + (ch1 << 0));
+            case 10:
+                return readNumericValue(field, buf);
+            default:
+                throw new DbfException("Unknown MEMO mode: " + field.getFieldLength());
         }
     }
 
