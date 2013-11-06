@@ -110,7 +110,7 @@ public class DbfReader implements Closeable {
     protected Float readFloatValue(DbfField field, byte[] buf) throws IOException {
         try {
             byte[] floatBuf = DbfUtils.trimLeftSpaces(buf);
-            boolean processable = (floatBuf.length > 0 && !DbfUtils.contains(floatBuf, (byte) '?'));
+            boolean processable = floatBuf.length > 0 && !DbfUtils.contains(floatBuf, (byte) '?') && !DbfUtils.contains(floatBuf, (byte) '*');
             return processable ? Float.valueOf(new String(floatBuf)) : null;
         } catch (NumberFormatException e) {
             throw new DbfException("Failed to parse Float from " + field.getName(), e);
@@ -125,7 +125,7 @@ public class DbfReader implements Closeable {
     protected Number readNumericValue(DbfField field, byte[] buf) throws IOException {
         try {
             byte[] numericBuf = DbfUtils.trimLeftSpaces(buf);
-            boolean processable = numericBuf.length > 0 && !DbfUtils.contains(numericBuf, (byte) '?');
+            boolean processable = numericBuf.length > 0 && !DbfUtils.contains(numericBuf, (byte) '?') && !DbfUtils.contains(numericBuf, (byte) '*');
             return processable ? Double.valueOf(new String(numericBuf)) : null;
         } catch (NumberFormatException e) {
             throw new DbfException("Failed to parse Number from " + field.getName(), e);
